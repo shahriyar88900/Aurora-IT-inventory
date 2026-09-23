@@ -7,23 +7,23 @@ echo  Building Aurora Plant IT Inventory - Desktop Edition (.exe)
 echo ============================================================
 echo.
 
-pip show pyinstaller >nul 2>&1
+python -m pip show pyinstaller >nul 2>&1
 if errorlevel 1 (
     echo Installing PyInstaller...
-    pip install pyinstaller
+    python -m pip install pyinstaller
 )
 
-pip show pywebview >nul 2>&1
+python -m pip show pywebview >nul 2>&1
 if errorlevel 1 (
     echo Installing pywebview...
-    pip install -r requirements-desktop.txt
+    python -m pip install -r requirements-desktop.txt
 )
 
 echo.
 echo Building AuroraInventory.exe ...
 echo.
 
-pyinstaller --noconfirm --onefile --windowed ^
+python -m PyInstaller --noconfirm --onefile --windowed ^
     --name AuroraInventory ^
     --add-data "static;static" ^
     desktop_app.py
