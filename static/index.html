@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#075ca8">
+  <title>Aurora Plant IT Inventory</title>
+  <link rel="stylesheet" href="/styles.css?v=4.7.0">
+</head>
+<body>
+<section class="login-screen" id="loginScreen">
+  <div class="login-visual">
+    <img src="/assets/aps.png" alt="Aurora logo">
+    <span>INTERNAL IT OPERATIONS</span>
+    <h1>Every IT asset.<br>One secure workspace.</h1>
+    <p>Aurora Power Solutions Ltd. (demo company)</p>
+    <div class="login-points"><b>✓ Central inventory</b><b>✓ Permission-based access</b><b>✓ Office LAN only</b></div>
+  </div>
+  <div class="login-panel">
+    <form id="loginForm" class="login-card">
+      <img src="/assets/aps.png" alt="Aurora logo">
+      <span>Aurora IT INVENTORY</span>
+      <h2>Welcome back</h2>
+      <p>Sign in with your administrator or user account.</p>
+      <label>Username<input name="username" autocomplete="username" required autofocus placeholder="Enter username"></label>
+      <label>Password<div class="password-field"><input type="password" name="password" autocomplete="current-password" required placeholder="Enter password"><button type="button" class="show-password" aria-label="Show password">◉</button></div></label>
+      <div class="form-error hidden" id="loginError"></div>
+      <button class="primary login-button">Sign in securely →</button>
+      <small>Authorized personnel only</small>
+    </form>
+  </div>
+</section>
+
+<div class="app hidden" id="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand"><img src="/assets/aps.png" alt="Aurora"><div><strong>Aurora</strong><span>IT Inventory</span></div><button class="mobile-only" id="closeNav">×</button></div>
+    <p class="company-name">Aurora Power Solutions Ltd. (demo company)</p>
+    <p class="nav-label">WORKSPACE</p>
+    <nav id="nav">
+      <button class="active administrator-only" data-view="overview"><b>▦</b>Overview</button>
+      <button data-view="assets"><b>▣</b><span id="assetsNavLabel">Assets</span> <i id="assetCount"></i></button>
+      <button class="administrator-only" data-view="employees"><b>♙</b>Employees <i id="employeeCount"></i></button>
+      <button class="administrator-only" data-view="maintenance"><b>◇</b>Maintenance <i class="alert-count" id="alertCount"></i></button>
+      <button class="administrator-only" data-view="reports"><b>▥</b>Reports</button>
+      <button class="administrator-only" data-view="network"><b>⇆</b>Network Devices <i id="networkCount"></i></button>
+      <button class="main-admin-only hidden" data-view="access"><b>⚿</b>Access Management</button>
+      <button data-view="settings"><b>⚙</b>Settings</button>
+    </nav>
+    <div class="health"><div><span class="health-icon">✓</span><strong>System health</strong><em>Good</em></div><progress value="100" max="100"></progress><small>Central database connected</small></div>
+    <div class="profile"><span class="avatar" id="profileInitials">IT</span><div><strong id="profileName">User</strong><small id="profileRole">Loading…</small></div><button id="logout" title="Sign out">↪</button></div>
+  </aside>
+
+  <main>
+    <header class="topbar">
+      <button class="menu mobile-only" id="openNav">☰</button>
+      <label class="search"><span>⌕</span><input id="search" placeholder="Search asset, serial, user or IP..."><kbd>Ctrl K</kbd></label>
+      <div class="top-actions"><img class="topbar-logo" src="/assets/aps-logo.png?v=4.7.0" alt="Aurora — Aurora Power Solutions Ltd. (demo company)"><span class="permission-chip" id="permissionChip"></span><button class="topbar-profile" id="topbarProfile" type="button" title="Account settings"><span class="avatar" id="topProfileInitials">IT</span><span class="topbar-profile-meta"><strong id="topProfileName">User</strong><small id="topProfileRole"></small></span></button><button id="theme" title="Toggle theme">◐</button></div>
+    </header>
+
+    <div class="content">
+      <section class="heading"><div><span>PLANT IT OPERATIONS</span><h1 id="pageTitle">Overview</h1><p id="pageSubtitle">A live view of every technology asset across the plant.</p></div><div><a class="secondary export-only" href="/api/export">⇩ Export CSV</a></div></section>
+      <div class="notice hidden" id="notice"></div>
+      <section id="view"></section>
+    </div>
+  </main>
+</div>
+
+<div class="modal-wrap hidden" id="modalWrap">
+  <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <header><div><span id="modalEyebrow">NEW INVENTORY RECORD</span><h2 id="modalTitle">Add IT asset</h2></div><button type="button" id="closeModal">×</button></header>
+    <form id="assetForm">
+      <input type="hidden" name="id">
+      <div class="form-grid">
+        <input type="hidden" name="name">
+        <input type="hidden" name="assigned_to">
+        <input type="hidden" name="cpu">
+        <label>Asset tag *<input name="asset_tag" required placeholder="APS-LT-002"></label>
+        <label>Product category<select name="category" id="assetCategory"><option>Laptop</option><option>Desktop</option><option>Monitor</option><option>Mouse</option><option>Keyboard</option><option>Printer</option><option>Server</option></select></label>
+        <label>Brand<select name="brand"><option value="">Select brand</option></select></label>
+        <label>Model<input name="model" placeholder="Latitude 5450"></label>
+        <label>Serial number<input name="serial" placeholder="Manufacturer serial"></label>
+        <label class="asset-ip-field" id="assetIpField">IP address<input name="ip_address" placeholder="192.168.50.x"></label>
+        <label>Department<input name="department" placeholder="IT / I&C / Finance"></label>
+        <label>Location<select name="location"><option value="">Select location</option></select></label>
+        <label>Arrival date<input type="date" name="arrival_date"></label>
+        <label>Distribution date<input type="date" name="distribution_date"></label>
+        <label class="asset-status-field hidden" id="statusField">Device status<select name="status"><option>In use</option><option selected>In stock</option><option>Damaged</option><option>In warranty</option><option>Repair</option><option>Retired</option></select></label>
+        <div class="computer-specs full" id="computerSpecs">
+          <label>RAM<select name="ram"><option value="">Select RAM</option></select></label>
+          <label>Processor Manufacturer<select name="processor_mfr"><option value="">Select manufacturer</option><option>Intel</option><option>AMD</option></select></label>
+          <label>Processor<select name="processor"><option value="">Select manufacturer first</option></select></label>
+          <label>Generation<select name="cpu_generation"><option value="">Select manufacturer first</option></select></label>
+          <label class="series-field hidden" id="seriesField">Series<input name="cpu_series" placeholder="e.g. 13500 / 7840HS"></label>
+          <label>SSD<select name="ssd"><option value="">Select SSD</option></select></label>
+          <label>HDD<select name="hdd"><option value="">Select HDD</option></select></label>
+        </div>
+        <label class="full">Notes<textarea name="notes" rows="3" placeholder="Configuration, condition or maintenance note"></textarea></label>
+      </div>
+      <footer><button type="button" class="secondary" id="cancelModal">Cancel</button><button class="primary" id="saveAsset">✓ Add asset</button></footer>
+    </form>
+  </section>
+</div>
+
+<div class="modal-wrap hidden" id="employeeModalWrap">
+  <section class="modal compact" role="dialog" aria-modal="true" aria-labelledby="employeeModalTitle">
+    <header><div><span>EMPLOYEE DIRECTORY</span><h2 id="employeeModalTitle">Add employee</h2></div><button type="button" id="closeEmployeeModal">×</button></header>
+    <form id="employeeForm">
+      <input type="hidden" name="id">
+      <div class="form-grid">
+        <label>Name *<input name="name" required placeholder="Employee full name"></label>
+        <label>ID *<input name="employee_id" required placeholder="e.g. APS-1025"></label>
+        <label>Department *<select name="department" id="employeeDepartment" required><option value="">Select department</option></select></label>
+        <label>Designation *<select name="designation" id="employeeDesignation" required><option value="">Select department first</option></select></label>
+        <label>Contact number<input name="phone" type="tel" placeholder="e.g. 01712-345678"></label>
+        <label>Email address<input name="email" type="email" placeholder="name@aurorapower.example"></label>
+      </div>
+      <footer><button type="button" class="secondary" id="cancelEmployeeModal">Cancel</button><button class="primary" id="saveEmployee">✓ Save employee</button></footer>
+    </form>
+  </section>
+</div>
+
+<div class="modal-wrap hidden" id="assignmentModalWrap">
+  <section class="modal compact" role="dialog" aria-modal="true" aria-labelledby="assignmentModalTitle">
+    <header><div><span>DEVICE ASSIGNMENT</span><h2 id="assignmentModalTitle">Assign device</h2></div><button type="button" id="closeAssignmentModal">×</button></header>
+    <form id="assignmentForm">
+      <input type="hidden" name="employee_id">
+      <div class="assignment-person" id="assignmentPerson"></div>
+      <div class="form-grid one-column">
+        <label>Choose device from Assets (In stock only) *<select name="asset_id" required></select></label>
+        <label>Device add date<input id="assignmentDate" type="date" readonly></label>
+      </div>
+      <footer><button type="button" class="secondary" id="cancelAssignmentModal">Cancel</button><button class="primary" id="saveAssignment">✓ Assign device</button></footer>
+    </form>
+  </section>
+</div>
+
+<div class="modal-wrap hidden" id="networkModalWrap">
+  <section class="modal compact" role="dialog" aria-modal="true" aria-labelledby="networkModalTitle">
+    <header><div><span>NETWORK DEVICES</span><h2 id="networkModalTitle">Add network device</h2></div><button type="button" id="closeNetworkModal">×</button></header>
+    <form id="networkForm">
+      <input type="hidden" name="id">
+      <div class="form-grid">
+        <label>Device *<select name="device_type" required><option value="">Select device</option><option>Router</option><option>Switch</option></select></label>
+        <label>Location *<select name="location" required><option value="">Select location</option><option>CCB</option><option>DM Plant</option><option>Dormitory</option><option>Workshop</option><option>UEB</option></select></label>
+        <label class="network-floor-field hidden" id="networkFloorField">Floor<select name="floor"><option value="">Select floor</option></select></label>
+        <label>Brand *<select name="brand" required><option value="">Select device first</option></select></label>
+        <label class="network-router-name-field hidden" id="networkRouterNameField">Router name<input name="router_name" placeholder="e.g. CCB-GF-Router-01"></label>
+        <label>Device MAC<input name="device_mac" placeholder="e.g. AA:BB:CC:DD:EE:FF"></label>
+        <label class="network-ip-field hidden" id="networkIpField">IP address<input name="ip_address" placeholder="192.168.50.x"></label>
+      </div>
+      <footer><button type="button" class="secondary" id="cancelNetworkModal">Cancel</button><button class="primary" id="saveNetwork">✓ Add device</button></footer>
+    </form>
+  </section>
+</div>
+
+<div class="modal-wrap hidden" id="userModalWrap">
+  <section class="modal compact" role="dialog" aria-modal="true" aria-labelledby="userModalTitle">
+    <header><div><span>ACCESS MANAGEMENT</span><h2 id="userModalTitle">Add user</h2></div><button type="button" id="closeUserModal">×</button></header>
+    <form id="userForm">
+      <input type="hidden" name="id">
+      <div class="form-grid">
+        <label>Employee ID *<select name="employee_pk" required><option value="">Select from employee list</option></select></label>
+        <label>Name<input name="full_name" readonly placeholder="Auto-filled from employee"></label>
+        <label>Designation<input name="designation" readonly placeholder="Auto-filled from employee"></label>
+        <label>Username / User ID<input name="username" readonly placeholder="Generated automatically"></label>
+        <label>Role<select name="role"><option value="user">User</option><option value="admin">Administrator</option></select></label>
+        <label>Password <input type="password" name="password" minlength="8" placeholder="Minimum 8 characters"></label>
+        <fieldset class="permission-box full"><legend>Account permissions</legend><label><input type="checkbox" name="can_read" checked> Read inventory</label><label><input type="checkbox" name="can_write"> Add &amp; edit</label><label><input type="checkbox" name="can_delete"> Delete</label><label><input type="checkbox" name="active" checked> Active account</label><small id="roleHelp">Users can only see assets currently assigned to their Employee ID.</small></fieldset>
+      </div>
+      <footer><button type="button" class="secondary" id="cancelUserModal">Cancel</button><button class="primary" id="saveUser">✓ Save user</button></footer>
+    </form>
+  </section>
+</div>
+
+<div class="modal-wrap hidden" id="passwordModalWrap">
+  <section class="modal password-modal" role="dialog" aria-modal="true" aria-labelledby="passwordTitle">
+    <header><div><span>ACCOUNT SECURITY</span><h2 id="passwordTitle">Change password</h2></div><button type="button" id="closePasswordModal">×</button></header>
+    <form id="passwordForm">
+      <div class="form-grid one-column">
+        <label>Current password<div class="password-field"><input type="password" name="current_password" required><button type="button" class="show-password" aria-label="Show password">◉</button></div></label>
+        <label>New password<div class="password-field"><input type="password" name="new_password" minlength="8" required placeholder="Minimum 8 characters"><button type="button" class="show-password" aria-label="Show password">◉</button></div></label>
+        <label>Confirm new password<div class="password-field"><input type="password" name="confirm_password" minlength="8" required><button type="button" class="show-password" aria-label="Show password">◉</button></div></label>
+      </div>
+      <footer><button type="button" class="secondary" id="cancelPasswordModal">Cancel</button><button class="primary">Update password</button></footer>
+    </form>
+  </section>
+</div>
+
+<div class="modal-wrap hidden" id="forcePasswordModalWrap">
+  <section class="modal password-modal" role="dialog" aria-modal="true" aria-labelledby="forcePasswordTitle">
+    <header><div><span>ACCOUNT SECURITY</span><h2 id="forcePasswordTitle">Set a new password</h2></div></header>
+    <p class="force-password-note">For your security you must replace the temporary password before you can use the dashboard.</p>
+    <form id="forcePasswordForm">
+      <div class="form-grid one-column">
+        <label>New password<div class="password-field"><input type="password" name="new_password" minlength="8" required placeholder="Minimum 8 characters"><button type="button" class="show-password" aria-label="Show password">◉</button></div></label>
+        <label>Confirm password<div class="password-field"><input type="password" name="confirm_password" minlength="8" required placeholder="Re-enter new password"><button type="button" class="show-password" aria-label="Show password">◉</button></div></label>
+      </div>
+      <footer><button class="primary" id="saveForcePassword">Change password</button></footer>
+    </form>
+  </section>
+</div>
+
+<div class="modal-wrap hidden" id="importModalWrap">
+  <section class="modal compact" role="dialog" aria-modal="true" aria-labelledby="importModalTitle">
+    <header><div><span id="importEyebrow">BULK IMPORT</span><h2 id="importModalTitle">Import from Excel</h2></div><button type="button" id="closeImportModal">×</button></header>
+    <div class="import-body">
+      <p id="importIntro" class="import-intro"></p>
+      <a class="secondary import-template" id="importTemplateLink" href="" download>⬇ Download Excel template</a>
+      <label class="import-file"><span id="importFileLabel">Choose a .xlsx or .csv file</span><input type="file" id="importFile" accept=".xlsx,.csv"></label>
+      <div class="import-result hidden" id="importResult"></div>
+    </div>
+    <footer><button type="button" class="secondary" id="cancelImportModal">Cancel</button><button type="button" class="primary" id="runImport">⬆ Upload &amp; import</button></footer>
+  </section>
+</div>
+
+<script src="/app.js?v=4.7.0" defer></script>
+</body>
+</html>

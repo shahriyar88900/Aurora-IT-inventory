@@ -1,0 +1,37 @@
+Aurora IT INVENTORY - VERSION 4.7
+================================
+
+IMPORTANT: Version 4.7 does NOT use the old address on port 8080.
+
+1. Extract the ZIP into a completely new folder.
+2. Right-click Allow_Private_LAN_Access.bat and choose Run as administrator.
+3. Double-click Start_Aurora_Inventory.bat.
+4. Confirm the black window says VERSION 4.7.
+5. Use this address on the server PC:
+
+   http://localhost:8090/login
+
+6. First login:
+
+   Username: admin
+   Password: 12345678
+
+If the browser address still shows :8080, close that browser tab. It is the
+old release. Version 4.7 always shows :8090/login in the address bar and
+VERSION 4.7 in the black server window.
+
+After login, open Employees to add a device holder with:
+- Name
+- Employee ID
+- Designation
+- Department: I&C, EMD, MMD, A&P, EHS, OPD or RPQC
+
+Use + Device to assign an In stock asset. The date is added automatically.
+Use Return to move the device back to In stock.
+
+The Main Admin uses Access Management to select an Employee ID. Name,
+Designation and Username are filled automatically. A User sees only assets
+currently assigned to that Employee ID. An Administrator receives the Read,
+Add/Edit and Delete permissions selected by the Main Admin.
+
+For another office PC, run Show_Server_IP.bat and use the address it displays.

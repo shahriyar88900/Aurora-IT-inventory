@@ -1,0 +1,50 @@
+Aurora Plant IT Inventory - Windows LAN Edition
+Version 4.7.0
+
+Changes in 4.7.0:
+- Employees: added a search box (search by Name or Employee ID) at the top of the
+  Employee directory.
+- Employees: two new departments added — Warranty and Chemical (9 departments total).
+- Employees: the directory is now grouped department by department (e.g. all MMD staff
+  listed together, then the next department), instead of a flat alphabetical list.
+- Employees: Designation is now a dropdown that automatically shows only the job titles
+  that belong to the selected Department (e.g. choosing MMD offers GM, Senior Engineer,
+  Engineer, Assistant Engineer, Senior Technician, Technician, Welder, Mechanist).
+  This applies in Add, Edit and Excel/CSV import.
+- Employees: added Contact number and Email address fields, shown in the directory table
+  and included in the Excel import template.
+- Employees: the summary bar now shows both "Active employees" and "Resigned employees"
+  counts.
+- Assets: removed the "Export CSV" link from the top of the Assets page (the Reports page
+  still has its own download link).
+- Access Management: removed the duplicate "+ Add login account" button that appeared a
+  second time lower on the page; only the one at the top remains.
+- The Excel import templates were regenerated to include the new departments and the
+  phone/email columns.
+
+Changes in 4.6.0:
+- Bulk import: Assets and Employees can now be added by uploading an Excel (.xlsx) or CSV file.
+  Use the "Import Excel" button on the Assets and Employees pages. A ready-made template with
+  the correct columns can be downloaded from inside the import window (no internet needed).
+  Duplicate tags/IDs and invalid rows are skipped and reported back after each upload.
+- Add/Edit asset: Location is now a dropdown (CCB, DM Plant, UEB, Warehouse, Workshop).
+- Add/Edit asset: SSD and HDD are now dropdowns (128 GB, 256 GB, 512 GB, 1 TB, 2 TB).
+- IP address field is hidden for Monitor, Mouse, Keyboard and Printer, and no IP is saved for them.
+- Existing (legacy) location, SSD and HDD values are preserved automatically when editing old records.
+- Save errors (e.g. a duplicate Asset tag or Employee ID) now appear as a clear message
+  ON TOP of the open form instead of behind it, so a blocked save is never silent.
+- Error messages stay on screen longer so the reason a save did not go through is easy to read.
+- Cache-busting bumped to 4.6.0 so browsers always load the new interface (fixes a stale
+  cached script that could make Add/Save appear unresponsive).
+
+Employee-linked access (from 4.5):
+- Login panel is always the first screen after server startup.
+- Separate Employees page with Name, ID, Designation and Department.
+- Device assignment from In stock assets with an automatic assignment date.
+- Device Return moves an asset back to In stock; Resign returns all devices and keeps history.
+- Access accounts are created by selecting an Employee ID.
+- Main Admin controls Administrator Read, Add/Edit and Delete permissions.
+- Laptop/Desktop records include RAM, CPU, SSD and HDD.
+- Product categories are Laptop, Desktop, Monitor, Mouse, Keyboard, Printer and Server.
+- Read, Write and Delete permissions are enforced by the server.
+- Uses port 8090 so an older release on port 8080 cannot mask this version.
