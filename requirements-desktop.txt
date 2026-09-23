@@ -1,0 +1,4 @@
+# Only needed for the desktop (native window) edition — desktop_app.py.
+# The browser-based edition (server.py + Start_Aurora_Inventory.bat) still
+# needs no external packages at all.
+pywebview>=5.0

@@ -12,6 +12,7 @@ import os
 import re
 import secrets
 import sqlite3
+import sys
 import time
 import webbrowser
 from datetime import datetime, timedelta, timezone
@@ -20,9 +21,20 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
-ROOT = Path(__file__).resolve().parent
-STATIC = ROOT / "static"
-DATA = ROOT / "data"
+if getattr(sys, "frozen", False):
+    # Running as a PyInstaller-built .exe: read-only assets (static/) live inside
+    # the temporary bundle extracted to sys._MEIPASS, but the writable database
+    # must live next to the actual .exe, not inside that temp folder, or it would
+    # be wiped every time the app closes.
+    _RESOURCE_ROOT = Path(getattr(sys, "_MEIPASS", Path(sys.executable).resolve().parent))
+    _APP_ROOT = Path(sys.executable).resolve().parent
+else:
+    _RESOURCE_ROOT = Path(__file__).resolve().parent
+    _APP_ROOT = _RESOURCE_ROOT
+
+ROOT = _APP_ROOT
+STATIC = _RESOURCE_ROOT / "static"
+DATA = _APP_ROOT / "data"
 DB_PATH = DATA / "inventory.db"
 SESSION_COOKIE = "aurora_session"
 SESSION_HOURS = 12
@@ -1249,6 +1261,10 @@ class Handler(SimpleHTTPRequestHandler):
                         self.send_json({"error": "Return this device before deleting the asset"}, 409)
                         return
                     target = db.execute("SELECT asset_tag FROM assets WHERE id=?", (asset_id,)).fetchone()
+                    if not target:
+                        self.send_json({"error": "Asset not found"}, 404)
+                        return
+                    db.execute("DELETE FROM asset_assignments WHERE asset_id=?", (asset_id,))
                     cur = db.execute("DELETE FROM assets WHERE id=?", (asset_id,))
                     audit(db, user, "DELETE", "asset", asset_id, target[0] if target else "")
                 self.send_json({"deleted": cur.rowcount})
@@ -1313,6 +1329,8 @@ class Handler(SimpleHTTPRequestHandler):
                 self.send_json({"deleted": cur.rowcount})
                 return
             self.send_json({"error": "Not found"}, 404)
+        except sqlite3.IntegrityError:
+            self.send_json({"error": "This record is referenced elsewhere and cannot be deleted"}, 409)
         except ValueError:
             self.send_json({"error": "Invalid record id"}, 400)
 

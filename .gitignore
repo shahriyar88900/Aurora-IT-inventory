@@ -2,6 +2,10 @@ __pycache__/
 *.pyc
 data/*.db
 data/*.db-journal
-
 data/*.db-shm
 data/*.db-wal
+
+# PyInstaller build output (built locally by build_exe.bat, not stored in the repo)
+build/
+dist/
+*.spec

@@ -39,6 +39,29 @@ This is the employee-linked login release. It uses port `8090`, so an old dashbo
 - Safe database backup and Windows Private-network firewall helper
 - Automatic shutdown after eight hours
 
+## Desktop Edition (native window, no browser)
+
+In addition to the browser-based server above, this repo includes a desktop
+wrapper that runs the same app inside its own native Windows window —
+no visible browser tab, no address bar.
+
+**Just want to try it (Python already installed):**
+
+1. Double-click `Start_Aurora_Desktop.bat`.
+2. The first run installs one small package (`pywebview`) automatically, then
+   opens the app in its own window.
+
+**Want a standalone `.exe` you can hand to someone else (no Python required to run it)?**
+
+1. On a Windows PC with Python installed, double-click `build_exe.bat`.
+2. It installs PyInstaller + pywebview, then builds `dist\AuroraInventory.exe`.
+3. Copy that one `.exe` anywhere and double-click it — a `data` folder is
+   created next to it on first run to hold the database.
+
+> Note: `server.py` and `Start_Aurora_Inventory.bat` (the original browser/LAN
+> edition) are unchanged and still work exactly as documented below — the
+> desktop edition is an optional extra, not a replacement.
+
 ## First-time setup on the Windows server PC
 
 1. Install Python 3.11 or newer from <https://www.python.org/downloads/windows/>.
